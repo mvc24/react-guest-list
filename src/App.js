@@ -10,12 +10,16 @@ export default function App() {
 
   function createNewGuest() {
     const newGuestId = guestList.length + 1;
-    const newGuest = {
+    const guest = {
       id: newGuestId,
       firstName: firstName,
       lastName: lastName,
     };
-    setGuestList([...guestList, newGuest]);
+    setGuestList([...guestList, guest]);
+  }
+
+  function isGuestAttending() {
+    setAttending(true);
   }
 
   return (
@@ -61,6 +65,22 @@ export default function App() {
       <section>
         <h2>My Guests</h2>
         <div>show my guests</div>
+        <ul>
+          {guestList.map((guest) => {
+            return (
+              <li key={`guest-id-${guest.id}`}>
+                {guest.firstName} {guest.lastName}
+                <input
+                  type="checkbox"
+                  checked={guest.attending}
+                  onChange={(event) => {
+                    isGuestAttending(guest.id, event.currentTarget.checked);
+                  }}
+                />
+              </li>
+            );
+          })}
+        </ul>
       </section>
     </>
   );
