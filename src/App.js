@@ -3,8 +3,20 @@ import { useState } from 'react';
 export default function App() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [attending, setAttending] = useState(false);
+  const [guestList, setGuestList] = useState([]);
 
-  // Here I need my functions to do things
+  // this function creates a new guest
+
+  function createNewGuest() {
+    const newGuestId = guestList.length + 1;
+    const newGuest = {
+      id: newGuestId,
+      firstName: firstName,
+      lastName: lastName,
+    };
+    setGuestList([...guestList, newGuest]);
+  }
 
   return (
     <>
@@ -33,7 +45,16 @@ export default function App() {
               />
             </label>
             <br />
-            <button>Create Guest</button>
+            <button
+              onClick={() => {
+                createNewGuest();
+                setFirstName('');
+                setLastName('');
+                console.log(guestList);
+              }}
+            >
+              Create Guest
+            </button>
           </form>
         </div>
       </section>
