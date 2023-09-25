@@ -2,7 +2,7 @@ const baseUrl = 'http://localhost:4000';
 
 // This fetches all the guests from the database
 
-export async function getAllGuests() {
+export async function getAllGuestsFromApi() {
   const response = await fetch(`${baseUrl}/guests`);
   const allGuests = await response.json();
 
@@ -33,10 +33,10 @@ export async function createNewGuestInApi(newGuest) {
   return createdGuest;
 }
 
-// This uses the PUT method to update a guest according to their ID
+/* // This uses the PUT method to update a guest according to their ID
 
-export async function updateGuest() {
-  const response = await fetch(`${baseUrl}/guests/1`, {
+export async function updateGuestInApi(id) {
+  const response = await fetch(`${baseUrl}/guests/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -46,12 +46,12 @@ export async function updateGuest() {
   const updatedGuest = await response.json();
 
   return updatedGuest;
-}
+} */
 
 // This uses the DELETE function to delete a guest
 
-export async function deleteGuest() {
-  const response = await fetch(`${baseUrl}/guests/1`, { method: 'DELETE' });
+export async function deleteGuest(id) {
+  const response = await fetch(`${baseUrl}/guests/${id}`, { method: 'DELETE' });
   const deletedGuest = await response.json();
   return deletedGuest;
 }

@@ -1,26 +1,40 @@
-import { useState } from 'react';
-import { createNewGuestInApi } from './api';
+import { useEffect, useState } from 'react';
+import {
+  createNewGuestInApi,
+  getAllGuestsFromApi,
+  updateGuestInApi,
+} from './api';
 
 export default function App() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [isAttending, setIsAttending] = useState(false);
   const [guestList, setGuestList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const baseUrl = 'http://localhost:4000';
 
-  // this function creates a new guest
+  // this function gets all my guests from the API
 
-  /*  function createGuest() {
-    const newGuestId = guestList.length + 1;
-    const guest = {
-      id: newGuestId,
-      firstName: firstName,
-      lastName: lastName,
-      attending: isAttending,
-    };
-    setGuestList([...guestList, guest]);
-  } */
+  // this does something
+
+  useEffect(() => {
+    async function firstRenderFetch() {
+      const response = await fetch(`${baseUrl}/guests`);
+
+      const data = await response.json();
+
+      setGuestList(data);
+
+      setIsLoading(false);
+    }
+
+    firstRenderFetch().catch((error) => {
+      console.log(error);
+    });
+  }, []);
+
+  // This function to create a new guest creates an object with the values first & last name, and then it creates a constant awaiting the creation of a new guest within the api. Then it updates the guest list.
 
   async function createNewGuest() {
     const newGuest = {
@@ -31,22 +45,45 @@ export default function App() {
     setGuestList([...guestList, createdGuest]);
   }
 
-  // this function could maybe one day change the attendance status
+  // this changes the attendance status of the guest by clicking a checkbox. The attendance status needs to communicate with the API
 
-  /*   function attendingStatus(id) {
-    const guestObject = guestList.filter((guest) => guest.id === id);
-    if (isAttending === true) {
-      setIsAttending(true);
-    } else {
-      setIsAttending(false);
-    }
-    guestObject.attending([]);
+  async function updateGuest(id, attending) {
+    const response = await fetch(`${baseUrl}/guests/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ attending: attending }),
+    });
+    const updatedGuest = await response.json();
+    console.log(updatedGuest);
 
-    console.log(
-      'status',
-      guestList.filter((guest) => guest.id === id),
-    );
-  } */
+    // finde den gast im gesamtarray, veränder den status lokal
+    //
+    /*  const updateGuests = guestList.map((g) => {
+      if (g.id === guest.id) {
+        return { ...g, attending: !g.attending };
+      }
+      return g;
+    });
+    setGuestList(updateGuests); */
+
+    const updateGuestList = guestList.filter((guest) => {
+      return guest.id !== updatedGuest.id;
+    });
+    setGuestList([...guestList], updateGuestList);
+    console.log(updatedGuest);
+  }
+
+  async function deleteGuest(id) {
+    const response = await fetch(`${baseUrl}/guests/${id}`, {
+      method: 'DELETE',
+    });
+    const deletedGuest = await response.json();
+    setGuestList(guestList.filter((guest) => guest.id !== deletedGuest.id));
+  }
+
+  /*  const guestListAfterDelete = console.log(deletedGuest); */
 
   return (
     <>
@@ -76,8 +113,8 @@ export default function App() {
             </label>
             <br />
             <button
-              onClick={() => {
-                createNewGuest();
+              onClick={async () => {
+                await createNewGuest();
                 setFirstName('');
                 setLastName('');
                 console.log('guest list', guestList);
@@ -100,13 +137,13 @@ export default function App() {
                   <input
                     type="checkbox"
                     checked={guest.isAttending}
-                    onChange={(event) => {
-                      attendingStatus(guest.id);
-                      setIsAttending(event.currentTarget.checked);
-                      console.log(event.currentTarget.checked);
-                    }}
+                    onChange={(event) =>
+                      updateGuest(guest.id, event.currentTarget.checked)
+                    }
                   />
-                  <button /* onClick={() => } */>X</button>
+                  <button onClick={async () => await deleteGuest(guest.id)}>
+                    X
+                  </button>
                 </div>
               </li>
             );
