@@ -1,26 +1,52 @@
 import { useState } from 'react';
+import { createNewGuestInApi } from './api';
 
 export default function App() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [attending, setAttending] = useState(false);
+  const [isAttending, setIsAttending] = useState(false);
   const [guestList, setGuestList] = useState([]);
+
+  const baseUrl = 'http://localhost:4000';
 
   // this function creates a new guest
 
-  function createNewGuest() {
+  /*  function createGuest() {
     const newGuestId = guestList.length + 1;
     const guest = {
       id: newGuestId,
       firstName: firstName,
       lastName: lastName,
+      attending: isAttending,
     };
     setGuestList([...guestList, guest]);
+  } */
+
+  async function createNewGuest() {
+    const newGuest = {
+      firstName,
+      lastName,
+    };
+    const createdGuest = await createNewGuestInApi(newGuest);
+    setGuestList([...guestList, createdGuest]);
   }
 
-  function isGuestAttending() {
-    setAttending(true);
-  }
+  // this function could maybe one day change the attendance status
+
+  /*   function attendingStatus(id) {
+    const guestObject = guestList.filter((guest) => guest.id === id);
+    if (isAttending === true) {
+      setIsAttending(true);
+    } else {
+      setIsAttending(false);
+    }
+    guestObject.attending([]);
+
+    console.log(
+      'status',
+      guestList.filter((guest) => guest.id === id),
+    );
+  } */
 
   return (
     <>
@@ -29,7 +55,7 @@ export default function App() {
       </header>
       <section>
         <h2>Add a guest</h2>
-        <div data-test-id="guest">
+        <div>
           <form onSubmit={(event) => event.preventDefault()}>
             <label htmlFor="First name">
               First name
@@ -54,7 +80,7 @@ export default function App() {
                 createNewGuest();
                 setFirstName('');
                 setLastName('');
-                console.log(guestList);
+                console.log('guest list', guestList);
               }}
             >
               Create Guest
@@ -69,14 +95,19 @@ export default function App() {
           {guestList.map((guest) => {
             return (
               <li key={`guest-id-${guest.id}`}>
-                {guest.firstName} {guest.lastName}
-                <input
-                  type="checkbox"
-                  checked={guest.attending}
-                  onChange={(event) => {
-                    isGuestAttending(guest.id, event.currentTarget.checked);
-                  }}
-                />
+                <div data-test-id="guest">
+                  {guest.firstName} {guest.lastName}
+                  <input
+                    type="checkbox"
+                    checked={guest.isAttending}
+                    onChange={(event) => {
+                      attendingStatus(guest.id);
+                      setIsAttending(event.currentTarget.checked);
+                      console.log(event.currentTarget.checked);
+                    }}
+                  />
+                  <button /* onClick={() => } */>X</button>
+                </div>
               </li>
             );
           })}

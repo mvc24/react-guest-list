@@ -18,13 +18,16 @@ export async function getOneGuest() {
 
 // This uses the POST method to create a new guest (no 1)
 
-export async function createNewGuest() {
+export async function createNewGuestInApi(newGuest) {
   const response = await fetch(`${baseUrl}/guests`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ firstName: 'Karl', lastName: 'Horky' }),
+    body: JSON.stringify({
+      firstName: newGuest.firstName,
+      lastName: newGuest.lastName,
+    }),
   });
   const createdGuest = await response.json();
   return createdGuest;
